@@ -17,11 +17,14 @@ cMainWin::cMainWin(std::string asTitle) : iObject("MainWindow")
 	mwNewFileNameEntry = 0;
 	mwTrackNameBox = 0;	//Бокс со всеми файлами на конвертацию
 
+	mConvert = new cConvert(this);
+
 	mTracks.clear();
 
 	mbIsAdditionalSettingsVisible = false;
 
 	msTitle = asTitle;
+
 }
 cMainWin::~cMainWin()
 {
@@ -32,6 +35,7 @@ void cMainWin::Create()
 {
 	if(mbIsCreated)
 		return;
+
 
 	// Общие виджеты. Будут использованы несколько раз
 	GtkWidget *awHBox;
@@ -101,6 +105,10 @@ void cMainWin::Create()
 
     g_signal_connect(awOpenFileButton, "clicked", G_CALLBACK(OnOpenFile), this);
 
+    mwTrackNameBox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    gtk_box_pack_start(GTK_BOX(awHBox), mwTrackNameBox, FALSE, FALSE, 5);
+
+
 	awVBox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_box_pack_start(GTK_BOX(mwMainBox), awVBox, FALSE, FALSE, 10);
 
@@ -136,7 +144,11 @@ void cMainWin::Create()
 
 	}
 	gtk_box_pack_start(GTK_BOX(awHBox), mwQuality, TRUE, TRUE, 30);
-
+	gtk_range_set_show_fill_level ((GtkRange *)mwQuality, TRUE);
+	gtk_range_set_restrict_to_fill_level ((GtkRange *)mwQuality, TRUE);
+	gtk_range_set_fill_level ((GtkRange *)mwQuality, 0);
+	g_signal_connect (mwQuality, "value-changed", G_CALLBACK (OnQualityChanged), this);
+	g_signal_connect (mwQuality, "adjust-bounds", G_CALLBACK (OnAdjustBoundsQuality), this);
 
 	awAdditionButton = gtk_button_new_with_label ("Дополнительно");
 	gtk_box_pack_end(GTK_BOX(awHBox), awAdditionButton, FALSE, FALSE, 30);
@@ -174,19 +186,61 @@ void cMainWin::Destroy()
 	if(!mbIsCreated)
 		return;
 
-	std::vector<cTrack *>::iterator aIt = mTracks.begin();
-	for(; aIt < mTracks.end(); ++aIt)
+	if(mConvert)
 	{
-		delete (*aIt);
+		delete mConvert;
+		mConvert = 0;
+	}
+
+	tTracksIt It = mTracks.begin();
+	for(; It < mTracks.end(); ++It)
+	{
+		delete (*It);
 	}
 
 	mbIsCreated = false;
 }
 
+void cMainWin::AddNewTrack(cTrack *aTrack)
+{
+	if(!mwTrackNameBox)
+		return;
+
+	GtkWidget *awHBox;
+	GtkWidget *awLabel;
+	GtkWidget *awImage;
+	GtkWidget *awEventBox;
+
+	awHBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_box_pack_start (GTK_BOX (mwTrackNameBox), awHBox, FALSE, FALSE, 0);
+
+	awLabel = gtk_label_new (aTrack->GetFileName().c_str());
+	gtk_box_pack_start (GTK_BOX (awHBox), awLabel, FALSE, FALSE, 0);
+
+	awImage = gtk_image_new_from_stock (GTK_STOCK_CLOSE, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	awEventBox = gtk_event_box_new ();
+
+	gtk_container_add (GTK_CONTAINER (awEventBox), awImage);
+	gtk_box_pack_start (GTK_BOX (awHBox), awEventBox, FALSE, FALSE, 2);
+
+	cTrackBox *aTrackBox = new cTrackBox();
+
+	aTrackBox->mMainWin = this;
+	aTrackBox->mTrack = aTrack;
+	aTrackBox->mwBox = awHBox;
+
+	g_signal_connect (G_OBJECT (awEventBox), "button_press_event", G_CALLBACK (cMainWin::OnDeleteTrack), aTrackBox);
+
+
+	mTracks.push_back(aTrackBox);
+
+	gtk_widget_show_all(awHBox);
+}
+
 void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 {
 	GtkWidget *dialogwin = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	GtkWidget *dialog = gtk_dialog_new_with_buttons (NULL,
+	GtkWidget *dialog = gtk_dialog_new_with_buttons ("О Программе",
 													  GTK_WINDOW(dialogwin),
 													  GTK_DIALOG_MODAL,
 													  "Закрыть",
@@ -207,7 +261,7 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 	gtk_label_set_markup ((GtkLabel *)awLabel, asString.str().c_str());
 	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 3);
 
-	awLabel = gtk_label_new ("Copyright 2015 Dmitry Kilchanov & Mind Walkers Studio");
+	awLabel = gtk_label_new ("Copyright 2015 Mind Walkers Studio");
 	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 3);
 
 	gtk_container_add((GtkContainer *)gtk_dialog_get_content_area ((GtkDialog *)dialog), awVbox);
@@ -231,23 +285,119 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 	}
 
 	gtk_widget_destroy(dialog);
-
-	std::cout << "Справка" << std::endl;
 }
 void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 {
-	std::cout << "Открыть файл" << std::endl;
+	GtkWidget *dialog;
+
+	dialog = gtk_file_chooser_dialog_new ("Выберите файл",
+											GTK_WINDOW(aMainWin->mwWindow),
+											GTK_FILE_CHOOSER_ACTION_OPEN,
+											("_Cancel"), GTK_RESPONSE_CANCEL,
+											("_Open"), GTK_RESPONSE_ACCEPT,
+											NULL);
+
+	//Устанавливаем .mkv фильтр
+	GtkFileFilter *filter = gtk_file_filter_new ();
+	gtk_file_filter_add_pattern (filter, "*.mp3");
+	gtk_file_filter_add_pattern (filter, "*.MP3");
+	gtk_file_filter_add_pattern (filter, "*.wav");
+	gtk_file_filter_add_pattern (filter, "*.WAV");
+	gtk_file_filter_add_pattern (filter, "*.ogg");
+	gtk_file_filter_add_pattern (filter, "*.OGG");
+	gtk_file_filter_set_name (filter, ".mp3, .wav, .ogg");
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog),  filter);
+	gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(dialog),  filter);
+
+	//Нельзя выбирать несколько записей одновременно - приведёт к непредсказемой работе последующих методов.
+	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER(dialog), FALSE);
+
+
+
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
+	{
+		//Извлекаем нужные URI из полученного
+		unsigned int slash;
+		std::string source = (const char *)gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (dialog));
+
+		slash = source.rfind("/");
+		if(slash==std::string::npos)
+		{
+			g_print("Ошибка при добавлении файла\n");
+			gtk_widget_destroy (dialog);
+			return;
+		}
+
+		//Извелкаем URI для базы данных
+		std::string asFullPatch = "file://" + source;
+
+		std::string asShortPatch = aMainWin->FindLastNCopy(asFullPatch, "/");
+		aMainWin->FindNReplace(asShortPatch, "/", "");
+
+		std::string asTypeString = aMainWin->FindLastNCopy(asFullPatch, ".");
+		aMainWin->FindNReplace(asTypeString, ".", "");
+
+		std::cout << asShortPatch << std::endl;
+		std::cout << asTypeString << std::endl;
+
+
+		cTrack *aTrack = new cTrack(asFullPatch, asShortPatch, asTypeString);
+		aMainWin->AddNewTrack(aTrack);
+
+
+
+
+
+
+	}
+
+	gtk_widget_destroy (dialog);
+
 }
 void cMainWin::OnConvert(GtkWidget *widget, cMainWin *aMainWin)
 {
 	std::cout << "Конвертация" << std::endl;
-}
-void cMainWin::OnDeleteTrack(GtkWidget *widget, cMainWin *aMainWin)
-{
-	std::cout << "Удаление" << std::endl;
 }
 
 void cMainWin::OnShowAdditionalSettings(GtkWidget *widget, cMainWin *aMainWin)
 {
 	std::cout << "Настройки" << std::endl;
 }
+
+void cMainWin::OnAdjustBoundsQuality(GtkRange *aRange, gdouble adValue, cMainWin *aMainWin)
+{
+	int adIntValue = (int)(adValue+0.1);
+	gtk_range_set_fill_level (aRange, adIntValue);
+}
+
+void cMainWin::OnQualityChanged(GtkRange *aRange, cMainWin *aMainWin)
+{
+	int adValue = (int)(gtk_range_get_value (aRange)+0.1);
+
+	if(adValue != gtk_range_get_value (aRange))
+	{
+		gtk_range_set_value (aRange, adValue);
+	}
+
+	std::cout << gtk_range_get_value (aRange) << std::endl;
+}
+gboolean cMainWin::OnDeleteTrack(GtkWidget *awEventBox, GdkEventButton *aEvent, cTrackBox *aTrack)
+{
+	if(aTrack && aTrack->mTrack)
+	{
+		tTracksIt It = aTrack->mMainWin->mTracks.begin();
+
+		for(;It != aTrack->mMainWin->mTracks.end(); ++It)
+		{
+			if(aTrack->mTrack->GetFullUri() == (*It)->mTrack->GetFullUri())
+			{
+				gtk_widget_destroy(aTrack->mwBox);
+				delete (*It);
+				aTrack->mMainWin->mTracks.erase(It);
+				break;
+			}
+		}
+	}
+	return TRUE;
+}
+

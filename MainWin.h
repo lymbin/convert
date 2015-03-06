@@ -11,8 +11,24 @@
 #include "main.h"
 #include "Object.h"
 #include "Track.h"
+#include "Convert.h"
+#include "CommonStringFunctions.h"
 
-class cMainWin: public iObject{
+class cConvert;
+class cMainWin;
+struct cTrackBox;
+
+typedef std::vector<cTrackBox *> tTracks;
+typedef std::vector<cTrackBox *>::iterator tTracksIt;
+
+
+struct cTrackBox{
+	GtkWidget *mwBox;
+	cMainWin *mMainWin;
+	cTrack *mTrack;
+};
+
+class cMainWin: public iObject, public cCommonStringFunctions{
 
 	GtkWidget *mwWindow;
 	GtkWidget *mwMainBox;
@@ -25,24 +41,30 @@ class cMainWin: public iObject{
 
 	std::string msTitle;
 
-	int mdCurrentTrack;
+	tTracks mTracks;
 
-	std::vector<cTrack *> mTracks;
+	cConvert *mConvert;
 
 	bool mbIsAdditionalSettingsVisible;
 
 public:
 	cMainWin(std::string asTitle);
-	~cMainWin();
+	virtual ~cMainWin();
 
-	void Create();
-	void Destroy();
+	virtual void Create();
+	virtual void Destroy();
+
+	void AddNewTrack(cTrack *aTrack);
 
 	static void OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin);
 	static void OnOpenFile(GtkWidget *widget, cMainWin *aMainWin);
 	static void OnConvert(GtkWidget *widget, cMainWin *aMainWin);
-	static void OnDeleteTrack(GtkWidget *widget, cMainWin *aMainWin);
 	static void OnShowAdditionalSettings(GtkWidget *widget, cMainWin *aMainWin);
+
+	static void OnQualityChanged (GtkRange *aRange, cMainWin *aMainWin);
+	static void OnAdjustBoundsQuality(GtkRange *range, gdouble adValue, cMainWin *aMainWin);
+
+	static gboolean OnDeleteTrack(GtkWidget *awEventBox, GdkEventButton *aEvent, cTrackBox *aTrack);
 };
 
 
