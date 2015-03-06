@@ -9,6 +9,7 @@
 #define TRACK_H_
 
 #include "main.h"
+#include "Object.h"
 
 enum eFormat
 {
@@ -25,24 +26,22 @@ static std::string asFormat[] =
 
 static int adFormatCount = 3;
 
-static std::string asQuality[] =
-{
-	"64", "128", "192", "320"
-};
-
-static int adQualityCount = 4;
-
-class cTrack : public iObject {
+class cTrack: public iObject{
 
 	eFormat meFormat;
-	std::string msUri;
+	std::string msFullUri;
+	std::string msFileName;
 
 public:
-	cTrack() : iObject("track") {meFormat = eFormat_Unknown;}
-	~cTrack(){Destroy();}
+	cTrack(std::string asFullUri, std::string asFileName = "", std::string asFormat = "");
 
-	void Create(){}
-	void Destroy(){}
+	~cTrack();
+
+	virtual void Create();
+	virtual void Destroy();
+
+	std::string GetFullUri();
+	std::string GetFileName();
 };
 
 
