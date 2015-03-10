@@ -133,10 +133,10 @@ void cMainWin::Create()
 	gtk_box_pack_start(GTK_BOX(awVBox), awHBox, FALSE, FALSE, 10);
 
 
-	mwQuality = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, 0, adQualityCount-1, 1);
+	mwQuality = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, 0, eQuality_count-1, 1);
 	gtk_scale_set_draw_value ((GtkScale *)mwQuality, FALSE);
 
-	for(int i = 0; i < adQualityCount; i++)
+	for(int i = 0; i < eQuality_count; i++)
 	{
 		std::string asQ = asQuality[i] +"kbps";
 
@@ -146,7 +146,9 @@ void cMainWin::Create()
 	gtk_box_pack_start(GTK_BOX(awHBox), mwQuality, TRUE, TRUE, 30);
 	gtk_range_set_show_fill_level ((GtkRange *)mwQuality, TRUE);
 	gtk_range_set_restrict_to_fill_level ((GtkRange *)mwQuality, TRUE);
-	gtk_range_set_fill_level ((GtkRange *)mwQuality, 0);
+	gtk_range_set_fill_level ((GtkRange *)mwQuality, eQuality_count-1);
+	gtk_range_set_value ((GtkRange *)mwQuality, eQuality_count-1);
+
 	g_signal_connect (mwQuality, "value-changed", G_CALLBACK (OnQualityChanged), this);
 	g_signal_connect (mwQuality, "adjust-bounds", G_CALLBACK (OnAdjustBoundsQuality), this);
 
@@ -276,10 +278,6 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 
 	switch(result)
 	{
-		case GTK_RESPONSE_ACCEPT:
-			aMainWin->Destroy();
-			gtk_main_quit();
-			break;
 		default:
 			break;
 	}
@@ -325,30 +323,29 @@ void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 		{
 			g_print("Ошибка при добавлении файла\n");
 			gtk_widget_destroy (dialog);
+			aMainWin->PrintNotification("Ошибка при добавлении файла", eNotifTypeError);
 			return;
 		}
 
 		//Извелкаем URI для базы данных
-		std::string asFullPatch = "file://" + source;
+		std::string asFullPatch = source;
 
-		std::string asShortPatch = aMainWin->FindLastNCopy(asFullPatch, "/");
+		std::string asShortPatch = aMainWin->FindLastNCopyAfter(asFullPatch, "/");
 		aMainWin->FindNReplace(asShortPatch, "/", "");
 
-		std::string asTypeString = aMainWin->FindLastNCopy(asFullPatch, ".");
+		std::string asTypeString = aMainWin->FindLastNCopyAfter(asFullPatch, ".");
 		aMainWin->FindNReplace(asTypeString, ".", "");
+
+		std::string asFolderName = aMainWin->FindLastNCopy(asFullPatch, "/");
+
 
 		std::cout << asShortPatch << std::endl;
 		std::cout << asTypeString << std::endl;
+		std::cout << asFolderName << std::endl;
 
 
-		cTrack *aTrack = new cTrack(asFullPatch, asShortPatch, asTypeString);
+		cTrack *aTrack = new cTrack(asFullPatch, asShortPatch, asTypeString, asFolderName);
 		aMainWin->AddNewTrack(aTrack);
-
-
-
-
-
-
 	}
 
 	gtk_widget_destroy (dialog);
@@ -356,7 +353,34 @@ void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 }
 void cMainWin::OnConvert(GtkWidget *widget, cMainWin *aMainWin)
 {
-	std::cout << "Конвертация" << std::endl;
+	if(aMainWin->mTracks.empty())
+	{
+		aMainWin->PrintNotification("Не выбрано ни одного трека для конвертации.", eNotifTypeError);
+		return;
+	}
+
+	if(!aMainWin->mConvert)
+	{
+		aMainWin->PrintNotification("Ошибка конвертера. Перезапустите приложение.", eNotifTypeError);
+		return;
+	}
+
+	aMainWin->mConvert->SetFormat(gtk_combo_box_text_get_active_text ((GtkComboBoxText *)aMainWin->mwFormat));
+
+	int adQualityMark = gtk_range_get_value ((GtkRange *)aMainWin->mwQuality);
+	aMainWin->mConvert->SetQuality(asQuality[adQualityMark]);
+
+	if(!aMainWin->mConvert->Convert())
+	{
+		aMainWin->PrintNotification("Что-то пошло не так при конвертации.", eNotifTypeError);
+		return;
+	}
+	else
+	{
+		aMainWin->PrintNotification("Конвертация прошла успешно!", eNotifTypeNotification);
+		return;
+	}
+
 }
 
 void cMainWin::OnShowAdditionalSettings(GtkWidget *widget, cMainWin *aMainWin)

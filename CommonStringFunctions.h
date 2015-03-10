@@ -32,7 +32,7 @@ public:
 		return asText;
 	}
 
-	std::string FindLastNCopy(std::string asText, std::string asFindText)
+	std::string FindLastNCopyAfter(std::string asText, std::string asFindText)
 	{
 		if(asFindText == "")
 			return "";
@@ -42,6 +42,20 @@ public:
 		std::string asCopyText;
 
 		std::copy(asText.begin() + Pos, asText.end(), std::back_inserter(asCopyText));
+
+		return asCopyText;
+	}
+
+	std::string FindLastNCopy(std::string asText, std::string asFindText)
+	{
+		if(asFindText == "")
+			return "";
+
+		unsigned int Pos = asText.find_last_of(asFindText);
+
+		std::string asCopyText;
+
+		std::copy(asText.begin(), asText.begin() + Pos, std::back_inserter(asCopyText));
 
 		return asCopyText;
 	}
