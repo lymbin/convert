@@ -266,6 +266,14 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 	awLabel = gtk_label_new ("Copyright 2015 Mind Walkers Studio");
 	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 3);
 
+	awLabel = gtk_label_new ("1. Выберите один или несколько файлов, которые вы хотите конвертировать. \n"
+							"2. Настройте параметры исходящего файла - выберите формат, "
+							"укажите качество(доступно не для всех форматов).\n"
+							"Если требуется, укажите дополнительные параметры в пункте \"Дополнительно\".\n"
+							"3. Нажмите кнопку \"Конвертировать\" и немного подождите.\n"
+							"Вы только что успешно конвертировали ваши файлы в другой формат, поздравляем!");
+	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 5);
+
 	gtk_container_add((GtkContainer *)gtk_dialog_get_content_area ((GtkDialog *)dialog), awVbox);
 
 	//gtk_container_add((GtkContainer *)gtk_dialog_get_content_area ((GtkDialog *)dialog), gtk_label_new ("Покинуть Videoconsole?"));

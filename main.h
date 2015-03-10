@@ -46,6 +46,6 @@
 #include <gst/video/videooverlay.h>
 
 
-#define SYS_VERSION "0.4"
+#define SYS_VERSION "0.5"
 
 #endif /* MAIN_H_ */
