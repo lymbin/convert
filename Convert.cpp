@@ -55,7 +55,7 @@ void cConvert::SetFormat(std::string asFormatt)
 	{
 		if(asFormatt == asFormat[i])
 		{
-			//meFormat = (eFormat)i;
+			meFormat = (eFormat)i;
 			return;
 		}
 	}
@@ -72,7 +72,15 @@ std::string cConvert::CreatePipelineLine()
 
 	if(meFormat == eFormat_MP3)
 	{
-		asConvertLine << "lamemp3enc name=convert_mp3";
+		asConvertLine << "lamemp3enc name=convert_format";
+	}
+	else if(meFormat == eFormat_WAV)
+	{
+		asConvertLine << "wavenc name=convert_format";
+	}
+	else if(meFormat == eFormat_OGG)
+	{
+		asConvertLine << "vorbisenc name=convert_format ! oggmux";
 	}
 
 	asConvertLine << " ! filesink name=convert_sink ";
@@ -94,6 +102,13 @@ bool cConvert::Convert()
 
 	for(; aIt < mMainWin->mTracks.end(); ++aIt)
 	{
+		if(meFormat == eFormat_Unknown)
+			continue;
+		if(meFormat == eFormat_WAV && (*aIt)->mTrack->GetFormat() == eFormat_WAV)
+		{
+			continue;
+		}
+
 		mPipeline = gst_parse_launch (asConvertLine.c_str(), &aError);
 		if (!mPipeline) {
 		    g_print ("Parse error: %s\n", aError->message);
@@ -103,9 +118,10 @@ bool cConvert::Convert()
 		mFilesrc = gst_bin_get_by_name (GST_BIN (mPipeline), "convert_src");
 		g_object_set (mFilesrc, "location", (*aIt)->mTrack->GetFullUri().c_str(), NULL);
 
-		mEncode = gst_bin_get_by_name (GST_BIN (mPipeline), "convert_mp3");
+		mEncode = gst_bin_get_by_name (GST_BIN (mPipeline), "convert_format");
 
-		asNewTuneUri << (*aIt)->mTrack->GetFolderUri() << "/test";
+		asNewTuneUri << (*aIt)->mTrack->GetFolderUri() << "/" << mMainWin->FindLastNCopy((*aIt)->mTrack->GetFileName(), ".");
+
 
 		if(meFormat == eFormat_MP3)
 		{
@@ -114,8 +130,18 @@ bool cConvert::Convert()
 		}
 		else if(meFormat == eFormat_WAV)
 		{
-
+			asNewTuneUri << ".wav";
 		}
+		else if(meFormat == eFormat_OGG)
+		{
+			if(mdQuality*1000 > 250000)
+				g_object_set (mEncode, "bitrate", 250000, NULL);
+			else
+				g_object_set (mEncode, "bitrate", mdQuality*1000, NULL);
+
+			asNewTuneUri << ".ogg";
+		}
+
 		std::cout << asNewTuneUri.str() << std::endl;
 		mFilesink = gst_bin_get_by_name (GST_BIN (mPipeline), "convert_sink");
 		g_object_set (mFilesink, "location", asNewTuneUri.str().c_str(), NULL);

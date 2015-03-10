@@ -42,6 +42,7 @@ public:
 	std::string GetFullUri();
 	std::string GetFileName();
 	std::string GetFolderUri();
+	eFormat GetFormat();
 };
 
 
