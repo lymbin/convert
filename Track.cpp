@@ -7,9 +7,10 @@
 
 #include "Track.h"
 
-cTrack::cTrack(std::string asFullUri, std::string asFileName, std::string asFormat) : iObject (asFullUri)
+cTrack::cTrack(std::string asFullUri, std::string asFileName, std::string asFormat, std::string asFolderUri) : iObject (asFullUri)
 {
 	msFullUri = asFullUri;
+	msFolderUri = asFolderUri;
 
 	if(!asFileName.empty())
 		msFileName = asFileName;
@@ -57,4 +58,9 @@ std::string cTrack::GetFullUri()
 std::string cTrack::GetFileName()
 {
 	return msFileName;
+}
+
+std::string cTrack::GetFolderUri()
+{
+	return msFolderUri;
 }

@@ -24,16 +24,15 @@ static std::string asFormat[] =
 	"MP3", "WAV", "OGG"
 };
 
-static int adFormatCount = 3;
-
 class cTrack: public iObject{
 
 	eFormat meFormat;
 	std::string msFullUri;
 	std::string msFileName;
+	std::string msFolderUri;
 
 public:
-	cTrack(std::string asFullUri, std::string asFileName = "", std::string asFormat = "");
+	cTrack(std::string asFullUri, std::string asFileName = "", std::string asFormat = "", std::string asFolderUri = "");
 
 	~cTrack();
 
@@ -42,6 +41,7 @@ public:
 
 	std::string GetFullUri();
 	std::string GetFileName();
+	std::string GetFolderUri();
 };
 
 

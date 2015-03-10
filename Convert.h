@@ -10,20 +10,39 @@
 
 #include "main.h"
 #include "MainWin.h"
+#include "Track.h"
 
 class cMainWin;
+
+enum eQuality{
+	eQuality_low = 64,
+	eQuality_mid = 128,
+	eQuality_good = 192,
+	eQuality_best = 320,
+	eQuality_count = 4
+};
+
 
 static std::string asQuality[] =
 {
 	"64", "128", "192", "320"
 };
 
-static int adQualityCount = 4;
-
 class cConvert{
 
 	int mdQuality;
+	eFormat meFormat;
+
 	cMainWin *mMainWin;
+
+	GstElement 	*mPipeline,
+				*mFilesrc,
+				*mEncode,
+				*mFilesink;
+
+	bool mbIsConvertStarted;
+
+	bool mbIsNeedStop;
 
 public:
 	cConvert(cMainWin *aMainWin);
@@ -31,6 +50,13 @@ public:
 
 	void SetQuality(std::string asQuality);
 	void SetQuality(int adQuality);
+
+	void SetFormat(std::string asFormat);
+
+	std::string CreatePipelineLine();
+
+
+	bool Convert();
 };
 
 #endif /* CONVERT_H_ */

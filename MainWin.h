@@ -13,6 +13,7 @@
 #include "Track.h"
 #include "Convert.h"
 #include "CommonStringFunctions.h"
+#include "NotificationSystem.h"
 
 class cConvert;
 class cMainWin;
@@ -28,7 +29,9 @@ struct cTrackBox{
 	cTrack *mTrack;
 };
 
-class cMainWin: public iObject, public cCommonStringFunctions{
+class cMainWin: public iObject, public cCommonStringFunctions, public cNotificationSystem{
+
+	friend cConvert;
 
 	GtkWidget *mwWindow;
 	GtkWidget *mwMainBox;
