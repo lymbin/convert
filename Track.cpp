@@ -64,3 +64,8 @@ std::string cTrack::GetFolderUri()
 {
 	return msFolderUri;
 }
+
+eFormat cTrack::GetFormat()
+{
+	return meFormat;
+}
