@@ -13,7 +13,10 @@ cMainWin::cMainWin(std::string asTitle) : iObject("MainWindow")
 	mwMainBox = 0;
 
 	mwFormat = 0;
-	mwQuality = 0;
+
+	mMP3Widgets.mwQuality = 0;
+	mOGGWidgets.mwQuality = 0;
+
 	mwNewFileNameEntry = 0;
 	mwTrackNameBox = 0;	//Бокс со всеми файлами на конвертацию
 
@@ -94,9 +97,6 @@ void cMainWin::Create()
 	//gtk_widget_set_halign (awLabel, GTK_ALIGN_START); // Не нужно, если использовать горизонтальный бокс
 	gtk_box_pack_start(GTK_BOX(awHBox), awLabel, FALSE, FALSE, 5);
 
-	//awOpenFileBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	//gtk_box_pack_start(GTK_BOX(awOpenBox), awOpenFileBox, FALSE, FALSE, 5);
-
 	//awFilePathEntry = gtk_entry_new ();
 	//gtk_box_pack_start(GTK_BOX(awOpenFileBox), awFilePathEntry, TRUE, TRUE, 10);
 
@@ -126,31 +126,60 @@ void cMainWin::Create()
 		gtk_combo_box_text_insert_text ((GtkComboBoxText *)mwFormat, -1, asFormat[i].c_str());
 	}
 	gtk_combo_box_set_active((GtkComboBox *)mwFormat, 0);
+	g_signal_connect (mwFormat, "changed", G_CALLBACK (OnChangeFormat), this);
+
 	gtk_box_pack_start(GTK_BOX(awHBox), mwFormat, FALSE, FALSE, 5);
 
 
 	awHBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_box_pack_start(GTK_BOX(awVBox), awHBox, FALSE, FALSE, 10);
 
+	//MP3
+	mMP3Widgets.mwQuality = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, 0, eMP3Quality_count-1, 1);
+	gtk_scale_set_draw_value ((GtkScale *)mMP3Widgets.mwQuality, FALSE);
 
-	mwQuality = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, 0, eQuality_count-1, 1);
-	gtk_scale_set_draw_value ((GtkScale *)mwQuality, FALSE);
-
-	for(int i = 0; i < eQuality_count; i++)
+	for(int i = 0; i < eMP3Quality_count; i++)
 	{
-		std::string asQ = asQuality[i] +"kbps";
+		std::string asQ = asMP3Quality[i] +"kbps";
 
-		gtk_scale_add_mark ((GtkScale *)mwQuality, i, GTK_POS_TOP, asQ.c_str());
+		gtk_scale_add_mark ((GtkScale *)mMP3Widgets.mwQuality, i, GTK_POS_TOP, asQ.c_str());
 
 	}
-	gtk_box_pack_start(GTK_BOX(awHBox), mwQuality, TRUE, TRUE, 30);
-	gtk_range_set_show_fill_level ((GtkRange *)mwQuality, TRUE);
-	gtk_range_set_restrict_to_fill_level ((GtkRange *)mwQuality, TRUE);
-	gtk_range_set_fill_level ((GtkRange *)mwQuality, eQuality_count-1);
-	gtk_range_set_value ((GtkRange *)mwQuality, eQuality_count-1);
+	gtk_box_pack_start(GTK_BOX(awHBox), mMP3Widgets.mwQuality, TRUE, TRUE, 30);
+	gtk_range_set_show_fill_level ((GtkRange *)mMP3Widgets.mwQuality, TRUE);
+	gtk_range_set_restrict_to_fill_level ((GtkRange *)mMP3Widgets.mwQuality, TRUE);
+	gtk_range_set_fill_level ((GtkRange *)mMP3Widgets.mwQuality, eMP3Quality_count-1);
+	gtk_range_set_value ((GtkRange *)mMP3Widgets.mwQuality, eMP3Quality_count-1);
 
-	g_signal_connect (mwQuality, "value-changed", G_CALLBACK (OnQualityChanged), this);
-	g_signal_connect (mwQuality, "adjust-bounds", G_CALLBACK (OnAdjustBoundsQuality), this);
+	g_signal_connect (mMP3Widgets.mwQuality, "value-changed", G_CALLBACK (OnQualityChanged), this);
+	g_signal_connect (mMP3Widgets.mwQuality, "adjust-bounds", G_CALLBACK (OnAdjustBoundsQuality), this);
+
+	gtk_widget_show(mMP3Widgets.mwQuality);
+
+
+	//OGG
+	mOGGWidgets.mwQuality = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, 0, eOGGQuality_count-1, 1);
+	gtk_scale_set_draw_value ((GtkScale *)mOGGWidgets.mwQuality, FALSE);
+
+	for(int i = 0; i < eOGGQuality_count; i++)
+	{
+		std::string asQ = asOGGQuality[i] +"kbps";
+
+		gtk_scale_add_mark ((GtkScale *)mOGGWidgets.mwQuality, i, GTK_POS_TOP, asQ.c_str());
+
+	}
+	gtk_box_pack_start(GTK_BOX(awHBox), mOGGWidgets.mwQuality, TRUE, TRUE, 30);
+	gtk_range_set_show_fill_level ((GtkRange *)mOGGWidgets.mwQuality, TRUE);
+	gtk_range_set_restrict_to_fill_level ((GtkRange *)mOGGWidgets.mwQuality, TRUE);
+	gtk_range_set_fill_level ((GtkRange *)mOGGWidgets.mwQuality, eOGGQuality_count-1);
+	gtk_range_set_value ((GtkRange *)mOGGWidgets.mwQuality, eOGGQuality_count-1);
+
+	g_signal_connect (mOGGWidgets.mwQuality, "value-changed", G_CALLBACK (OnQualityChanged), this);
+	g_signal_connect (mOGGWidgets.mwQuality, "adjust-bounds", G_CALLBACK (OnAdjustBoundsQuality), this);
+
+	gtk_widget_hide(mOGGWidgets.mwQuality);
+
+
 
 	awAdditionButton = gtk_button_new_with_label ("Дополнительно");
 	gtk_box_pack_end(GTK_BOX(awHBox), awAdditionButton, FALSE, FALSE, 30);
@@ -180,6 +209,9 @@ void cMainWin::Create()
 	g_signal_connect(awConvertButton, "clicked", G_CALLBACK(OnConvert), this);
 
 	gtk_widget_show_all (mwWindow);
+
+
+
 
 	mbIsCreated = true;
 }
@@ -269,7 +301,7 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 	awLabel = gtk_label_new ("1. Выберите один или несколько файлов, которые вы хотите конвертировать. \n"
 							"2. Настройте параметры исходящего файла - выберите формат, "
 							"укажите качество(доступно не для всех форматов).\n"
-							"Если требуется, укажите дополнительные параметры в пункте \"Дополнительно\".\n"
+							"Если требуется, укажите дополнительные параметры в пункте \"Дополнительно\"(пока не доступно).\n"
 							"3. Нажмите кнопку \"Конвертировать\" и немного подождите.\n"
 							"Вы только что успешно конвертировали ваши файлы в другой формат, поздравляем!");
 	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 5);
@@ -303,7 +335,6 @@ void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 											("_Open"), GTK_RESPONSE_ACCEPT,
 											NULL);
 
-	//Устанавливаем .mkv фильтр
 	GtkFileFilter *filter = gtk_file_filter_new ();
 	gtk_file_filter_add_pattern (filter, "*.mp3");
 	gtk_file_filter_add_pattern (filter, "*.MP3");
@@ -375,8 +406,22 @@ void cMainWin::OnConvert(GtkWidget *widget, cMainWin *aMainWin)
 
 	aMainWin->mConvert->SetFormat(gtk_combo_box_text_get_active_text ((GtkComboBoxText *)aMainWin->mwFormat));
 
-	int adQualityMark = gtk_range_get_value ((GtkRange *)aMainWin->mwQuality);
-	aMainWin->mConvert->SetQuality(asQuality[adQualityMark]);
+	if(aMainWin->mConvert->GetFormat() == eFormat_MP3)
+	{
+		int adQualityMark = gtk_range_get_value ((GtkRange *)aMainWin->mMP3Widgets.mwQuality);
+		aMainWin->mConvert->SetQuality(asMP3Quality[adQualityMark]);
+	}
+	else if(aMainWin->mConvert->GetFormat() == eFormat_OGG)
+	{
+		int adQualityMark = gtk_range_get_value ((GtkRange *)aMainWin->mOGGWidgets.mwQuality);
+		aMainWin->mConvert->SetQuality(asOGGQuality[adQualityMark]);
+	}
+	else if(aMainWin->mConvert->GetFormat() == eFormat_WAV)
+	{
+
+	}
+
+
 
 	if(!aMainWin->mConvert->Convert())
 	{
@@ -400,6 +445,31 @@ void cMainWin::OnAdjustBoundsQuality(GtkRange *aRange, gdouble adValue, cMainWin
 {
 	int adIntValue = (int)(adValue+0.1);
 	gtk_range_set_fill_level (aRange, adIntValue);
+}
+
+void cMainWin::OnChangeFormat(GtkComboBox *widget, cMainWin *aMainWin)
+{
+	std::string asFormat = gtk_combo_box_text_get_active_text ((GtkComboBoxText *)aMainWin->mwFormat);
+
+	if(asFormat == "MP3")
+	{
+		gtk_widget_show(aMainWin->mMP3Widgets.mwQuality);
+		gtk_widget_hide(aMainWin->mOGGWidgets.mwQuality);
+
+	}
+	else if(asFormat == "OGG")
+	{
+		gtk_widget_show(aMainWin->mOGGWidgets.mwQuality);
+		gtk_widget_hide(aMainWin->mMP3Widgets.mwQuality);
+	}
+	else if(asFormat == "WAV")
+	{
+		gtk_widget_hide(aMainWin->mOGGWidgets.mwQuality);
+
+		gtk_widget_hide(aMainWin->mMP3Widgets.mwQuality);
+	}
+
+	std::cout << "Меняем формат" << std::endl;
 }
 
 void cMainWin::OnQualityChanged(GtkRange *aRange, cMainWin *aMainWin)
