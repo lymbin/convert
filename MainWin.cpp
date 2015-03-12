@@ -13,6 +13,7 @@ cMainWin::cMainWin(std::string asTitle) : iObject("MainWindow")
 	mwMainBox = 0;
 
 	mwFormat = 0;
+	mwSpinner = 0;
 
 	mMP3Widgets.mwQuality = 0;
 	mOGGWidgets.mwQuality = 0;
@@ -128,6 +129,7 @@ void cMainWin::Create()
 	gtk_combo_box_set_active((GtkComboBox *)mwFormat, 0);
 	g_signal_connect (mwFormat, "changed", G_CALLBACK (OnChangeFormat), this);
 
+
 	gtk_box_pack_start(GTK_BOX(awHBox), mwFormat, FALSE, FALSE, 5);
 
 
@@ -177,10 +179,6 @@ void cMainWin::Create()
 	g_signal_connect (mOGGWidgets.mwQuality, "value-changed", G_CALLBACK (OnQualityChanged), this);
 	g_signal_connect (mOGGWidgets.mwQuality, "adjust-bounds", G_CALLBACK (OnAdjustBoundsQuality), this);
 
-	gtk_widget_hide(mOGGWidgets.mwQuality);
-
-
-
 	awAdditionButton = gtk_button_new_with_label ("Дополнительно");
 	gtk_box_pack_end(GTK_BOX(awHBox), awAdditionButton, FALSE, FALSE, 30);
 
@@ -206,11 +204,16 @@ void cMainWin::Create()
 	awConvertButton = gtk_button_new_with_label ("Конвертировать");
 	gtk_box_pack_start(GTK_BOX(awHBox), awConvertButton, FALSE, FALSE, 10);
 
+	mwSpinner = gtk_spinner_new ();
+	gtk_box_pack_start(GTK_BOX(awHBox), mwSpinner, FALSE, FALSE, 5);
+
+
 	g_signal_connect(awConvertButton, "clicked", G_CALLBACK(OnConvert), this);
 
 	gtk_widget_show_all (mwWindow);
 
-
+	gtk_widget_hide(mOGGWidgets.mwQuality);
+	gtk_widget_hide(mwSpinner);
 
 
 	mbIsCreated = true;
@@ -421,19 +424,21 @@ void cMainWin::OnConvert(GtkWidget *widget, cMainWin *aMainWin)
 
 	}
 
-
+	gtk_widget_show(aMainWin->mwSpinner);
+	gtk_spinner_start (GTK_SPINNER (aMainWin->mwSpinner));
 
 	if(!aMainWin->mConvert->Convert())
 	{
+		gtk_spinner_stop (GTK_SPINNER (aMainWin->mwSpinner));
 		aMainWin->PrintNotification("Что-то пошло не так при конвертации.", eNotifTypeError);
-		return;
 	}
 	else
 	{
+		gtk_spinner_stop (GTK_SPINNER (aMainWin->mwSpinner));
 		aMainWin->PrintNotification("Конвертация прошла успешно!", eNotifTypeNotification);
-		return;
 	}
 
+	gtk_widget_hide(aMainWin->mwSpinner);
 }
 
 void cMainWin::OnShowAdditionalSettings(GtkWidget *widget, cMainWin *aMainWin)
@@ -468,8 +473,6 @@ void cMainWin::OnChangeFormat(GtkComboBox *widget, cMainWin *aMainWin)
 
 		gtk_widget_hide(aMainWin->mMP3Widgets.mwQuality);
 	}
-
-	std::cout << "Меняем формат" << std::endl;
 }
 
 void cMainWin::OnQualityChanged(GtkRange *aRange, cMainWin *aMainWin)
