@@ -51,6 +51,7 @@ class cMainWin: public iObject, public cCommonStringFunctions, public cNotificat
 
 	GtkWidget *mwFormat;
 	GtkWidget *mwNewFileNameEntry;
+	GtkWidget *mwSpinner;
 
 	GtkWidget *mwTrackNameBox;	//Бокс со всеми файлами на конвертацию
 
