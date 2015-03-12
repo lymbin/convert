@@ -72,7 +72,7 @@ std::string cConvert::CreatePipelineLine()
 
 	if(meFormat == eFormat_MP3)
 	{
-		asConvertLine << "lamemp3enc name=convert_format";
+		asConvertLine << "lamemp3enc name=convert_format ! xingmux ! id3v2mux";
 	}
 	else if(meFormat == eFormat_WAV)
 	{
@@ -86,6 +86,10 @@ std::string cConvert::CreatePipelineLine()
 	asConvertLine << " ! filesink name=convert_sink ";
 
 	return asConvertLine.str();
+}
+eFormat cConvert::GetFormat()
+{
+	return meFormat;
 }
 
 bool cConvert::Convert()

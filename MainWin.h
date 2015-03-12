@@ -29,6 +29,19 @@ struct cTrackBox{
 	cTrack *mTrack;
 };
 
+struct cMP3BoxWidgets
+{
+	GtkWidget *mwQuality;
+};
+struct cOGGBoxWidgets
+{
+	GtkWidget *mwQuality;
+};
+struct cWAVBoxWidgets
+{
+
+};
+
 class cMainWin: public iObject, public cCommonStringFunctions, public cNotificationSystem{
 
 	friend cConvert;
@@ -37,7 +50,6 @@ class cMainWin: public iObject, public cCommonStringFunctions, public cNotificat
 	GtkWidget *mwMainBox;
 
 	GtkWidget *mwFormat;
-	GtkWidget *mwQuality;
 	GtkWidget *mwNewFileNameEntry;
 
 	GtkWidget *mwTrackNameBox;	//Бокс со всеми файлами на конвертацию
@@ -47,6 +59,10 @@ class cMainWin: public iObject, public cCommonStringFunctions, public cNotificat
 	tTracks mTracks;
 
 	cConvert *mConvert;
+
+	cMP3BoxWidgets mMP3Widgets;
+	cOGGBoxWidgets mOGGWidgets;
+	cWAVBoxWidgets mWAVWidgets;
 
 	bool mbIsAdditionalSettingsVisible;
 
@@ -64,10 +80,16 @@ public:
 	static void OnConvert(GtkWidget *widget, cMainWin *aMainWin);
 	static void OnShowAdditionalSettings(GtkWidget *widget, cMainWin *aMainWin);
 
+	static void OnChangeFormat(GtkComboBox *widget, cMainWin *aMainWin);
 	static void OnQualityChanged (GtkRange *aRange, cMainWin *aMainWin);
 	static void OnAdjustBoundsQuality(GtkRange *range, gdouble adValue, cMainWin *aMainWin);
 
 	static gboolean OnDeleteTrack(GtkWidget *awEventBox, GdkEventButton *aEvent, cTrackBox *aTrack);
+
+
+
+	//The “changed” signal
+
 };
 
 
