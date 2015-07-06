@@ -14,6 +14,7 @@
 
 class cMainWin;
 
+// Все доступные качества конвертируемого файла в MP3.
 enum eMP3Quality{
 	eMP3Quality_low = 64,
 	eMP3Quality_mid = 128,
@@ -22,6 +23,7 @@ enum eMP3Quality{
 	eMP3Quality_count = 4
 };
 
+// Все доступные качества конвертируемого файла в OGG.
 enum eOGGQuality{
 	eOGGQuality_low = 64,
 	eOGGQuality_mid = 128,
@@ -30,47 +32,50 @@ enum eOGGQuality{
 	eOGGQuality_count = 4
 };
 
+// Все доступные качества конвертируемого файла в MP3 в виде текста.
 static std::string asMP3Quality[] =
 {
 	"64", "128", "192", "320"
 };
 
+// Все доступные качества конвертируемого файла в OGG в виде текста.
 static std::string asOGGQuality[] =
 {
 	"64", "128", "192", "250"
 };
 
+// Класс конвертации файлов.
 class cConvert{
 
-	int mdQuality;
-	eFormat meFormat;
+	int mdQuality;			// Качество выходного файла.
+	eFormat meFormat;		// Формат файла на выходе.
 
-	cMainWin *mMainWin;
+	cMainWin *mMainWin;		// Указатель на класс главного окна.
 
+	// Элементы gStreamer.
 	GstElement 	*mPipeline,
-				*mFilesrc,
-				*mEncode,
-				*mFilesink;
+				*mFilesrc,	// Файловый источник.
+				*mEncode,	// Энкодер.
+				*mFilesink;	// Получатель файла.
 
-	bool mbIsConvertStarted;
-
-	bool mbIsNeedStop;
+	bool mbIsConvertStarted;	// Начата ли конвертация.
+	bool mbIsNeedStop;			// Нужно ли остановить конвертацию.
 
 public:
-	cConvert(cMainWin *aMainWin);
-	~cConvert();
+	cConvert(cMainWin *aMainWin);	// Конструктор.
+	~cConvert();					// Деструктор.
 
-	void SetQuality(std::string asQuality);
-	void SetQuality(int adQuality);
+	void SetQuality(std::string asQuality);	// Установим качество выходного файла из текста.
+	void SetQuality(int adQuality);			// Установим качество выходного файла из int.ы
 
-	void SetFormat(std::string asFormat);
+	void SetFormat(std::string asFormat);	// Установка формата выходного файла.
 
-	std::string CreatePipelineLine();
+	std::string CreatePipelineLine();		// Построение пипелайна.
 
-	eFormat GetFormat();
+	eFormat GetFormat();	// Получение формата.
 
 
-	bool Convert();
+	bool Convert();	// Главная функция конвертации.
 };
 
 #endif /* CONVERT_H_ */

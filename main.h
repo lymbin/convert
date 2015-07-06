@@ -45,7 +45,7 @@
 #include <gst/app/gstappsrc.h>
 #include <gst/video/videooverlay.h>
 
-
-#define SYS_VERSION "0.7"
+// Тут задаём номер версии программы.
+#define SYS_VERSION "0.8"
 
 #endif /* MAIN_H_ */

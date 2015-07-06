@@ -7,16 +7,18 @@
 
 #include "Track.h"
 
+// Конструктор трека. Содержит полный путь до файла, имя файла, формат и полный путь до папки с файлом.
 cTrack::cTrack(std::string asFullUri, std::string asFileName, std::string asFormat, std::string asFolderUri) : iObject (asFullUri)
 {
-	msFullUri = asFullUri;
-	msFolderUri = asFolderUri;
+	msFullUri = asFullUri;		// Полный путь до файла.
+	msFolderUri = asFolderUri;	// Путь до папки с файлом.
 
 	if(!asFileName.empty())
-		msFileName = asFileName;
+		msFileName = asFileName;	// Имя файла может отсутствовать.
 
 	meFormat = eFormat_Unknown;
 
+	// Добавим формат файла.
 	if(!asFormat.empty())
 	{
 		if((asFormat == "mp3") || (asFormat == "MP3"))
@@ -36,35 +38,43 @@ cTrack::cTrack(std::string asFullUri, std::string asFileName, std::string asForm
 
 }
 
+// Деструктор.
 cTrack::~cTrack()
 {
 
 }
 
+// Метод построения.
 void cTrack::Create()
 {
 
 }
+
+// Метод уничтожения.
 void cTrack::Destroy()
 {
 
 }
 
+// Получаем полный путь.
 std::string cTrack::GetFullUri()
 {
 	return msFullUri;
 }
 
+// Получаем имя файла.
 std::string cTrack::GetFileName()
 {
 	return msFileName;
 }
 
+// Получаем путь до папки с файлом.
 std::string cTrack::GetFolderUri()
 {
 	return msFolderUri;
 }
 
+// Получаем формат.
 eFormat cTrack::GetFormat()
 {
 	return meFormat;
