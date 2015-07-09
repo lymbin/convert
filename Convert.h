@@ -66,7 +66,7 @@ public:
 	~cConvert();					// Деструктор.
 
 	void SetQuality(std::string asQuality);	// Установим качество выходного файла из текста.
-	void SetQuality(int adQuality);			// Установим качество выходного файла из int.ы
+	void SetQuality(int adQuality);			// Установим качество выходного файла из int.
 
 	void SetFormat(std::string asFormat);	// Установка формата выходного файла.
 

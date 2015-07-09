@@ -473,9 +473,10 @@ void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 
 
 		// Отобразим в консоли все полученные пути для тестов.
-		std::cout << "Короткий путь до файла: " << asShortPatch << std::endl;
-		std::cout << "Тип файла: " << asTypeString << std::endl;
-		std::cout << "Имя папки с файлом: "  << asFolderName << std::endl;
+		std::cout << "Информация о файле: " << std::endl;
+		std::cout << "\tКороткий путь до файла: " << asShortPatch << std::endl;
+		std::cout << "\tТип файла: " << asTypeString << std::endl;
+		std::cout << "\tИмя папки с файлом: "  << asFolderName << std::endl;
 
 		// Теперь создадим новый трек с полученными параметрами и добавим его в базу данных.
 		cTrack *aTrack = new cTrack(asFullPatch, asShortPatch, asTypeString, asFolderName);

@@ -51,7 +51,7 @@ void cConvert::SetQuality(std::string asQuality)
 	asStream >> mdQuality;
 }
 
-// Установим качество выходного файла из int.ы
+// Установим качество выходного файла из int.
 void cConvert::SetQuality(int adQuality)
 {
 	mdQuality = adQuality;
@@ -151,7 +151,9 @@ bool cConvert::Convert()
 		// Добавляем формат к файлу.
 		if(meFormat == eFormat_MP3)
 		{
-			g_object_set (mEncode, "bitrate", mdQuality, NULL);
+			g_object_set (mEncode, "target", 1, NULL);			// Задаём упор на битрейт, а не на качество.
+			g_object_set (mEncode, "cbr", TRUE, NULL);			// Постоянный битрейт - работает только если target=birate(1).
+			g_object_set (mEncode, "bitrate", mdQuality, NULL);	// Битрейт - работает только если target=birate(1).
 			asNewTuneUri << ".mp3";
 		}
 		else if(meFormat == eFormat_WAV)
@@ -169,9 +171,10 @@ bool cConvert::Convert()
 		}
 
 		// Теперь полученный путь используем для настройки получателя.
-		std::cout << asNewTuneUri.str() << std::endl;
+		std::cout << "Полный путь до нового файла: " << asNewTuneUri.str() << std::endl;
 		mFilesink = gst_bin_get_by_name (GST_BIN (mPipeline), "convert_sink");
 		g_object_set (mFilesink, "location", asNewTuneUri.str().c_str(), NULL);
+
 
 
 		// Установим пипелайн в состояние Play.
