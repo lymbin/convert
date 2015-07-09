@@ -46,6 +46,6 @@
 #include <gst/video/videooverlay.h>
 
 // Тут задаём номер версии программы.
-#define SYS_VERSION "0.8"
+#define SYS_VERSION "0.8.1"
 
 #endif /* MAIN_H_ */

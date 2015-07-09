@@ -467,6 +467,7 @@ void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 		std::string asTypeString = aMainWin->FindLastNCopyAfter(asFullPatch, ".");
 		aMainWin->FindNReplace(asTypeString, ".", "");
 
+
 		// Теперь выделим имя папки с файлом с помощью другой функции, которая копирует текст сначала и по последнее упоминание символа.
 		std::string asFolderName = aMainWin->FindLastNCopy(asFullPatch, "/");
 
