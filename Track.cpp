@@ -8,8 +8,10 @@
 #include "Track.h"
 
 // Конструктор трека. Содержит полный путь до файла, имя файла, формат и полный путь до папки с файлом.
-cTrack::cTrack(std::string asFullUri, std::string asFileName, std::string asFormat, std::string asFolderUri) : iObject (asFullUri)
+cTrack::cTrack(std::string asFullUri, std::string asFileName, std::string asFormat, std::string asFolderUri, int adID) : iObject (asFullUri)
 {
+	static unsigned int index = 0;		//статичный индекс для формирования внутреннего ID
+
 	msFullUri = asFullUri;		// Полный путь до файла.
 	msFolderUri = asFolderUri;	// Путь до папки с файлом.
 
@@ -35,7 +37,16 @@ cTrack::cTrack(std::string asFullUri, std::string asFileName, std::string asForm
 		}
 	}
 
-
+	// Укажем индекс трека для лучшего поиска.
+	if(adID != -1)
+	{
+		mdID = (unsigned int)adID;	// Индекс задан в качестве параметра конструктора.
+	}
+	else
+	{
+		mdID = index;
+		index++;		// Увеличим статичный индекс.
+	}
 }
 
 // Деструктор.
@@ -78,4 +89,8 @@ std::string cTrack::GetFolderUri()
 eFormat cTrack::GetFormat()
 {
 	return meFormat;
+}
+unsigned int cTrack::GetID()
+{
+	return mdID;
 }

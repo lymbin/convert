@@ -30,13 +30,14 @@ static std::string asFormat[] =
 class cTrack: public iObject{
 
 	eFormat meFormat;
+	unsigned int mdID;
 	std::string msFullUri;
 	std::string msFileName;
 	std::string msFolderUri;
 
 public:
 	// Конструктор трека. Содержит полный путь до файла, имя файла, формат и полный путь до папки с файлом.
-	cTrack(std::string asFullUri, std::string asFileName = "", std::string asFormat = "", std::string asFolderUri = "");
+	cTrack(std::string asFullUri, std::string asFileName = "", std::string asFormat = "", std::string asFolderUri = "", int adID = -1);
 
 	~cTrack();	// Деструктор.
 
@@ -47,6 +48,7 @@ public:
 	std::string GetFileName();	// Получаем имя файла.
 	std::string GetFolderUri();	// Получаем путь до папки с файлом.
 	eFormat GetFormat();		// Получаем формат.
+	unsigned int GetID();		// Получаем ID трека.
 };
 
 

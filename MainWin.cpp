@@ -611,7 +611,8 @@ gboolean cMainWin::OnDeleteTrack(GtkWidget *awEventBox, GdkEventButton *aEvent, 
 			// Сравниваем по полным именам файла.
 			// Если файлов два и более, то удаляем первый из массива, т.к. проверки на дубликаты нет.
 			// Всё равно при конвертации учитывается только то что внутри списка.
-			if(aTrack->mTrack->GetFullUri() == (*It)->mTrack->GetFullUri())
+			//if(aTrack->mTrack->GetFullUri() == (*It)->mTrack->GetFullUri())
+			if(aTrack->mTrack->GetID() == (*It)->mTrack->GetID())
 			{
 				gtk_widget_destroy(aTrack->mwBox);		// Уничтожаем бокс с виджетами данного трека.
 				delete (*It);							// Очистим память.
