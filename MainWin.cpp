@@ -3,6 +3,20 @@
  *
  *  Created on: 03.03.2015
  *      Author: dmitry
+
+	Copyright 2016 Dmitry Kilchanov <dmitrykilchanov@gmail.com>
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
  */
 
 #include "MainWin.h"
@@ -375,7 +389,10 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 3);
 
 	// Создаём новый заголовок для текста и пакуем его в вертикальный бокс.
-	awLabel = gtk_label_new ("Copyright 2015 Mind Walkers ");
+	awLabel = gtk_label_new ("Copyright 2015-2016 Mind Walkers ");
+	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 3);
+
+	awLabel = gtk_label_new ("	Licensed under the Apache License, Version 2.0 (the \"License\") ");
 	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 3);
 
 
