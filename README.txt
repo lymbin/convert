@@ -1,14 +1,15 @@
-// Convert, 2015 Mind Walkers.
+// Convert, 2015-2016 Mind Walkers.
  
-// Установка для Linux.
+// Linux installation.
 
-	Для правильной работы программы вам потребуется следующее програмное обеспечение:
-		
-		* GTK 3 и GTK 3 dev. Можете взять из установщика пакетов вашей системы.
-		* gStreamer 1.0 и выше. Также возьмите из установщика пакетов вашей системы или http://gstreamer.freedesktop.org/
-		* gcc 4.7 и выше. Забирайте из установщика пакетов вашей системы.
+	Make requirements:
 	
-	Теперь можете запустить makefile - он должен скомпилировать исходники и на выходе вы получите исполняемый файл Convert.
-	Можете пользоваться!
+	* GTK 3 and GTK 3 dev.
+	* gStreamer 1.0 and above.
+	* gcc 4.7 and above.
+	
+	1. Run makefile 
+	   > make all.
+	2. Now you can Use.
 
 

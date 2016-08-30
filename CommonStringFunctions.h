@@ -1,85 +1,105 @@
 /*
- * CommonStringFunctions.h
+ * CommonStringFunctions.h - Some helpful string functions.
  *
- *  Created on: 10.11.2014
- *      Author: dmitry
+ *  Created on:     10.11.2014
+ *  Last modified:  11.12.2015
+ *
+ *      Author: Dmitry Kilchanov <dmitrykilchanov@gmail.com>
+ *
  */
 
 #ifndef COMMONSTRINGFUNCTIONS_H_
 #define COMMONSTRINGFUNCTIONS_H_
 
-// Класс общих функций для работы со строками.
-class cCommonStringFunctions
+// Some helpful string functions.
+class CommonStringFunctions
 {
 public:
-	// Метод поиска и замены определённого куска текста asFindText на другой asReplaceText в asText.
+    // Find 'findText' in 'text' and then replace it with 'replaceText'.
+    // Return 'text'. Also change 'text'.
 	std::string FindNReplace(std::string &asText, std::string asFindText, std::string asReplaceText)
 	{
-		if(asFindText == "")	// Только для не нулевого текста для поиска.
+		if (asFindText == "")	// Return when got null string.
 			return asText;
 
-		unsigned int Pos = asText.find(asFindText);		// Получаем позицию начала куска текста, который мы хотим заменить.
-		unsigned int ReplaceSize = asFindText.size();	// Получаем его размер.
+		std::string::size_type Pos = asText.find(asFindText);		// Get start position for replace text.
+		std::string::size_type ReplaceSize = asFindText.size();	// Get size for replace text.
 
-		if(!ReplaceSize)	// Если размер не получен, то установим его равным 1.
+		if (!ReplaceSize)	// For null ReplaceSize set it to 1.
 			ReplaceSize = 1;
 
-		// Далее цикл будет идти до тех пор, пока позиция не достигнет конца основного текста или не будет достигнут конец куска текста, который нужно заменить.
-		while(Pos < asText.size() && Pos != std::string::npos)
-		{
-			asText.replace(Pos, ReplaceSize, asReplaceText);	// Заменяем символы в позиции Pos основного текста символами из текста asReplaceText.
-			Pos = asText.find(asFindText);						// Снова получаем позицию куска текста, который мы хотим заменить.
+		while (Pos < asText.size() && Pos != std::string::npos) {
+			asText.replace(Pos, ReplaceSize, asReplaceText);	// Replace symbols in position Pos for asText from asReplaceText symbols.
+			Pos = asText.find(asFindText);						// Again get position for replace text.
 		}
 
-		return asText;	// Выводим полученный текст.
+		return asText;	// Return replaced text.
 	}
 
-	// Метод поиска текста после определённого куска текста asFindText в основном asText.
+    // Find last of 'findText' in 'text' and put founded text after it in 'copyText'.
+    // Return 'copyText'.
 	std::string FindLastNCopyAfter(std::string asText, std::string asFindText)
 	{
-		if(asFindText == "")	 // Только для не нулевого текста для поиска.
+		if (asFindText == "")	// Return when got null string.
 			return "";
 
-		unsigned int Pos = asText.find_last_of(asFindText);	// Получаем позицию начала куска текста с конца, который мы хотим заменить.
+		std::string::size_type Pos = asText.find_last_of(asFindText);	// Get last symbol in position for replace text.
 
-		std::string asCopyText;	// Тот текст который хотим получить.
-		std::copy(asText.begin() + Pos, asText.end(), std::back_inserter(asCopyText));	// Копируем в него все символы, начиная с Pos и до конца текста.
+		std::string asCopyText;	// This text we wanna get.
+		std::copy(asText.begin() + Pos, asText.end(), std::back_inserter(asCopyText));	// Copy in all symbols from Pos to end of asText.
 
-		return asCopyText;	// Выводим полученный текст.
+		return asCopyText;		// Return copied text.
 	}
 
-	// Метод поиска текста до определённого куска текста asFindText в основном asText.
+    // Find last of 'findText' in 'text' and put founded text before it in 'copyText'.
+    // Return 'copyText'.
 	std::string FindLastNCopy(std::string asText, std::string asFindText)
 	{
-		if(asFindText == "")	 // Только для не нулевого текста для поиска.
+		if(asFindText == "")	// Return when got null string.
 			return "";
 
-		unsigned int Pos = asText.find_last_of(asFindText);	// Получаем позицию начала куска текста с конца, который мы хотим заменить.
+		std::string::size_type  Pos = asText.find_last_of(asFindText);	// Get start position from the end for replace text.
 
-		std::string asCopyText;	// Тот текст который хотим получить.
-		std::copy(asText.begin(), asText.begin() + Pos, std::back_inserter(asCopyText));	// Копируем в него все символы, начиная с begin и до Pos текста.
+		std::string asCopyText;	// This text we wanna get.
+		std::copy(asText.begin(), asText.begin() + Pos, std::back_inserter(asCopyText));	//  Copy in all symbols from begin  to Pos of a text.
 
-		return asCopyText;	// Выводим полученный текст.
+		return asCopyText;	// Return copied text.
 	}
 
-	// Метод поиска, который выводит содержится ли кусок текста в тексте asText.
+	// Find 'findText' in 'text' and return true if found.
+	// Return found or not found bool.
 	bool Find(std::string asText, std::string asFindText)
 	{
-		if(asFindText == "")	// Только для не нулевого текста для поиска.
+		if(asFindText == "")	// Return when got null string.
 			return false;
 
-		unsigned int Pos = asText.find(asFindText);		// Получаем позицию начала куска текста, который мы хотим ищем.
+		std::string::size_type Pos = asText.find(asFindText);		// Get start position of a find text.
 
-		// Если нашли, то выводим true.
+		// If got return true.
 		if(Pos < asText.size() && Pos != std::string::npos)
-		{
 			return true;
-		}
 
 		return false;
 	}
 
+};
 
+// This class helps to write char 'fill' 'width' times in ostream.
+struct cFillandWString
+{
+	cFillandWString(char f, int w):fill(f), width(w){}
+
+	char fill;
+	int width;
+
+    // An outside class function, which have access to private and protected variables, but implemented inside class because of errors.
+    // Can be defined in .cpp, which we don't have.
+	friend std::ostream& operator<<(std::ostream& o, const cFillandWString& a)
+	{
+		o.fill(a.fill);
+		o.width(a.width);
+		return o;
+    }
 };
 
 

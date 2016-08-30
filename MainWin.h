@@ -54,7 +54,7 @@ struct cWAVBoxWidgets
 // Также содержит указатель на экземпляр класса cConvert, отвечающего за конвертацию файлов.
 // Класс является потомком 3-х классов - iObject - отвечающего за построение и уничтожение экземпляра класса, а также содержащий его глобальное имя,
 // 		cCommonStringFunctions - необходимого для выполнения различных операций над строками, и, cNotificationSystem - систему визуального оповещения.
-class cMainWin: public iObject, public cCommonStringFunctions, public cNotificationSystem{
+class cMainWin: public iObject, public CommonStringFunctions, public cNotificationSystem{
 
 	friend cConvert;
 
