@@ -23,7 +23,7 @@
 #include "MainWin.h"
 
 // Задаём название окна программы.
-#define SYS_WIN_TITLE "Аудио конвертер"
+#define SYS_WIN_TITLE "Audio converter"
 
 // Главная функция программы, содержит главный цикл gtk.
 // Здесь создаём объект cMainWin и забиваем его виджетами.

@@ -25,7 +25,7 @@
 #include "main.h"
 
 // enum для типов сообщений.
-enum eNotifType{
+enum eNotifType {
 	eNotifTypeError = 0,	// Ошибка.
 	eNotifTypeWarning,		// Предупреждение.
 	eNotifTypeNotification,	// Сообщение.
@@ -39,11 +39,11 @@ class cNotificationSystem{
 	std::string NotifyType(eNotifType eNType)
 	{
 		if(eNType == eNotifTypeError)
-			return "Ошибка";
+			return "Error";
 		else if(eNType == eNotifTypeWarning)
-			return "Предупреждение";
+			return "Warning";
 		else if(eNType == eNotifTypeNotification)
-			return "Уведомление";
+			return "Note";
 		else
 			return " ";
 	}
@@ -58,7 +58,7 @@ public:
 		GtkWidget *dialog = gtk_dialog_new_with_buttons (NotifyType(eNType).c_str(),
 														  GTK_WINDOW(dialogwin),
 														  GTK_DIALOG_MODAL,
-														  "Закрыть",
+														  "Close",
 														  GTK_RESPONSE_REJECT,
 														  NULL);
 
@@ -97,7 +97,7 @@ public:
 	//Выводим ошибку как лейбл в существующий виджет (подразумевается что это не контейнер типа frame). Пока не используем.
 	void PrintError(std::string asError, GtkWidget *aWidget)
 	{
-
+		// not used yet
 	}
 
 };

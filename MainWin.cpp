@@ -74,7 +74,6 @@ void cMainWin::Create()
 	GtkWidget *awHBox;		// Горизонтальный бокс.
 	GtkWidget *awVBox;		// Вертикальный бокс.
 	GtkWidget *awLabel;		// Заголовок.
-	GtkWidget *awFrame;		// Фрейм для виджетов.
 
 	GtkWidget *awMenuBar;		// Виджет для основного меню.
 	GtkWidget *awSubmenu;		// Подменю.
@@ -111,12 +110,12 @@ void cMainWin::Create()
 
 
     // Создаём новый пункт меню Справка и заполняем его подменю.
-    awMenuitem = gtk_menu_item_new_with_label ("Справка");
+    awMenuitem = gtk_menu_item_new_with_label ("Help");
     awSubmenu = gtk_menu_new();
 
 
     // Добавляем в подменю новый пункт.
-    awSubMenuitem = gtk_menu_item_new_with_label ("О программе");
+    awSubMenuitem = gtk_menu_item_new_with_label ("About");
     gtk_menu_shell_append (GTK_MENU_SHELL (awSubmenu), awSubMenuitem);	// Не забываем связать этот пункт с подменю.
 
     // Устанавливаем обработчик нажатия на пункт подменю.
@@ -128,7 +127,7 @@ void cMainWin::Create()
 
 
     // Добавляем в главный бокс разделитель виджетов(простая длинная линия).
-    gtk_box_pack_start (GTK_BOX (mwMainBox), gtk_separator_new(GTK_ORIENTATION_HORIZONTAL), FALSE, TRUE, 5);
+    //gtk_box_pack_start (GTK_BOX (mwMainBox), gtk_separator_new(GTK_ORIENTATION_HORIZONTAL), FALSE, TRUE, 5);
 
 
     // Задаём вертикальный бокс для первого пункта процесса конвертации и забиваем его в главный бокс.
@@ -145,7 +144,7 @@ void cMainWin::Create()
 	gtk_box_pack_start(GTK_BOX(awHBox), awLabel, FALSE, FALSE, 5);
 
 	// Создаём кнопку Открыть файл и добавляем в горизонтальный бокс.
-	awOpenFileButton = gtk_button_new_with_label ("Открыть файл");
+	awOpenFileButton = gtk_button_new_with_label ("Open file");
 	gtk_box_pack_start(GTK_BOX(awHBox), awOpenFileButton, FALSE, FALSE, 10);
 
 	// Устанавливаем обработчик нажатия на кнопку Открыть файл.
@@ -244,7 +243,7 @@ void cMainWin::Create()
 
 
 	// Добавим новую кнопку Дополнительно для отображения дополнительных параметров и добавим его в горизонтальный бокс.
-	awAdditionButton = gtk_button_new_with_label ("Дополнительно");
+	awAdditionButton = gtk_button_new_with_label ("Advanced");
 	gtk_box_pack_end(GTK_BOX(awHBox), awAdditionButton, FALSE, FALSE, 30);
 
 	// Введём обработчик нажатия на кнопку Дополнительно.
@@ -267,7 +266,7 @@ void cMainWin::Create()
 
 
 	// Добавим кнопку Конвертировать - для начала процесса конвертации ваших аудио файлов. Добавим кнопку в горизонтальный бокс.
-	awConvertButton = gtk_button_new_with_label ("Конвертировать");
+	awConvertButton = gtk_button_new_with_label ("Convert!");
 	gtk_box_pack_start(GTK_BOX(awHBox), awConvertButton, FALSE, FALSE, 10);
 
 	// Создадим спиннер для визуального отображения процесса конвертации.
@@ -312,7 +311,7 @@ void cMainWin::Destroy()
 void cMainWin::AddNewTrack(cTrack *aTrack)
 {
 	// Добавляем трек только если был создан бокс c треками для их визуального отображения в окне программы.
-	if(!mwTrackNameBox)
+	if (!mwTrackNameBox)
 		return;
 
 	// Общие виджеты. Будут использованы несколько раз.
@@ -360,10 +359,10 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 {
 	// Создаём новое диалоговое окно с заголовком О программе, полем для текста и кнопкой Закрыть, которая вызовет сигнал GTK_RESPONSE_REJECT при нажатии.
 	GtkWidget *dialogwin = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	GtkWidget *dialog = gtk_dialog_new_with_buttons ("О Программе",
+	GtkWidget *dialog = gtk_dialog_new_with_buttons ("About",
 													  GTK_WINDOW(dialogwin),
 													  GTK_DIALOG_MODAL,
-													  "Закрыть",
+													  "Close",
 													  GTK_RESPONSE_REJECT,
 													  NULL);
 
@@ -378,7 +377,7 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 
 	// Другая версия разметки текста в виджете заголовка. Тэг <big> из GTK.
 	std::stringstream asString;
-	asString << "<b>Версия " << SYS_VERSION << "</b>";
+	asString << "<b>Version " << SYS_VERSION << "</b>";
 
 	awLabel = gtk_label_new (NULL);										// Создаём новый заголовок для текста.
 	gtk_label_set_markup ((GtkLabel *)awLabel, asString.str().c_str()); // Устанавливаем разметку текста.
@@ -397,12 +396,12 @@ void cMainWin::OnAbout(GtkMenuItem *menuitem, cMainWin *aMainWin)
 
 
 	// Теперь создадим многострочный текст и забъём его в вертикальный бокс.
-	awLabel = gtk_label_new ("1. Выберите один или несколько файлов, которые вы хотите конвертировать. \n"
-							"2. Настройте параметры исходящего файла - выберите формат, "
-							"укажите качество(доступно не для всех форматов).\n"
-							"Если требуется, укажите дополнительные параметры в пункте \"Дополнительно\"(пока не доступно).\n"
-							"3. Нажмите кнопку \"Конвертировать\" и немного подождите.\n"
-							"Вы только что успешно конвертировали ваши файлы в другой формат, поздравляем!");
+	awLabel = gtk_label_new ("1. Choose one or more files to convert. \n"
+							 "2. Setup output file parameters - choose format, "
+							 "setup quality (not available for all formats).\n"
+							 "If required, select additional options in the \"Advanced\"(not available).\n"
+							 "3. Push \"Convert\" button and wait some little time.\n"
+							 "You have successfully converted your files to another format, congratulations!");
 	gtk_box_pack_start(GTK_BOX(awVbox), awLabel, FALSE, FALSE, 5);
 
 	// Обязательно добавим наш вертикальный бокс в контейнер диалогового окна.
@@ -433,7 +432,7 @@ void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 	// Теперь создадим его, как отдельное окно с заголовком Выберите файл и двумя кнопками Отмена и Открыть.
 	// Нажатие на кнопку Отмена вызовет сигнал GTK_RESPONSE_CANCEL.
 	// Нажатие на кнопку Открыть вызовет сигнал GTK_RESPONSE_ACCEPT.
-	dialog = gtk_file_chooser_dialog_new ("Выберите файл",
+	dialog = gtk_file_chooser_dialog_new ("Choose file",
 											GTK_WINDOW(aMainWin->mwWindow),
 											GTK_FILE_CHOOSER_ACTION_OPEN,
 											("_Cancel"), GTK_RESPONSE_CANCEL,
@@ -466,9 +465,9 @@ void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 		slash = source.rfind("/");		// Находим последний слэш.
 		if(slash==std::string::npos)	// Если слэш - последний символ в источнике, то нужно оповестить об ошибке, т.к. файл не выбран.
 		{
-			g_print("Ошибка при добавлении файла\n");
+			g_print("Error adding file\n");
 			gtk_widget_destroy (dialog);
-			aMainWin->PrintNotification("Ошибка при добавлении файла", eNotifTypeError);		// Выводим диалоговое окно с ошибкой.
+			aMainWin->PrintNotification("Error adding file", eNotifTypeError);		// Выводим диалоговое окно с ошибкой.
 			return;
 		}
 
@@ -490,10 +489,10 @@ void cMainWin::OnOpenFile(GtkWidget *widget, cMainWin *aMainWin)
 
 
 		// Отобразим в консоли все полученные пути для тестов.
-		std::cout << "Информация о файле: " << std::endl;
-		std::cout << "\tКороткий путь до файла: " << asShortPatch << std::endl;
-		std::cout << "\tТип файла: " << asTypeString << std::endl;
-		std::cout << "\tИмя папки с файлом: "  << asFolderName << std::endl;
+		std::cout << "File info: " << std::endl;
+		std::cout << "\tFile name: " << asShortPatch << std::endl;
+		std::cout << "\tFile type: " << asTypeString << std::endl;
+		std::cout << "\tFolder name: "  << asFolderName << std::endl;
 
 		// Теперь создадим новый трек с полученными параметрами и добавим его в базу данных.
 		cTrack *aTrack = new cTrack(asFullPatch, asShortPatch, asTypeString, asFolderName);
@@ -510,14 +509,14 @@ void cMainWin::OnConvert(GtkWidget *widget, cMainWin *aMainWin)
 	// Проверим есть ли вообще что конвертировать.
 	if(aMainWin->mTracks.empty())
 	{
-		aMainWin->PrintNotification("Не выбрано ни одного трека для конвертации.", eNotifTypeError);
+		aMainWin->PrintNotification("You have no track to convert.", eNotifTypeError);
 		return;
 	}
 
 	// Проверим создан ли экземпляр конвертера в окне.
 	if(!aMainWin->mConvert)
 	{
-		aMainWin->PrintNotification("Ошибка конвертера. Перезапустите приложение.", eNotifTypeError);
+		aMainWin->PrintNotification("Converter error. Restart application.", eNotifTypeError);
 		return;
 	}
 
@@ -538,7 +537,7 @@ void cMainWin::OnConvert(GtkWidget *widget, cMainWin *aMainWin)
 	}
 	else if(aMainWin->mConvert->GetFormat() == eFormat_WAV)
 	{
-
+		// no quality slider for WAV.
 	}
 
 	// Теперь-то покажем спиннер и запустим его.
@@ -549,12 +548,12 @@ void cMainWin::OnConvert(GtkWidget *widget, cMainWin *aMainWin)
 	if(!aMainWin->mConvert->Convert())
 	{
 		gtk_spinner_stop (GTK_SPINNER (aMainWin->mwSpinner));
-		aMainWin->PrintNotification("Что-то пошло не так при конвертации.", eNotifTypeError);
+		aMainWin->PrintNotification("Something wrong with convert.", eNotifTypeError);
 	}
 	else
 	{
 		gtk_spinner_stop (GTK_SPINNER (aMainWin->mwSpinner));
-		aMainWin->PrintNotification("Конвертация прошла успешно!", eNotifTypeNotification);
+		aMainWin->PrintNotification("Convert successful!", eNotifTypeNotification);
 	}
 
 	gtk_widget_hide(aMainWin->mwSpinner);	// Спрячем спиннер до следующей конвертации.
@@ -564,7 +563,7 @@ void cMainWin::OnConvert(GtkWidget *widget, cMainWin *aMainWin)
 void cMainWin::OnShowAdditionalSettings(GtkWidget *widget, cMainWin *aMainWin)
 {
 	// Пока ничего важного не показывает.
-	std::cout << "Настройки" << std::endl;
+	std::cout << "Advanced" << std::endl;
 }
 
 // Обработчик изменения границ слайдера. Даёт возможность регулировать границы до изменения позиции указателя слайдера.
@@ -612,7 +611,8 @@ void cMainWin::OnQualityChanged(GtkRange *aRange, cMainWin *aMainWin)
 		gtk_range_set_value (aRange, adValue);
 	}
 
-	std::cout << gtk_range_get_value (aRange) << std::endl;
+	// Much trash in console. Use only in debug mode.
+	//std::cout << gtk_range_get_value (aRange) << std::endl;
 }
 
 // Обработчик удаления трека из списка в окне.

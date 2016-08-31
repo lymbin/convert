@@ -185,7 +185,7 @@ bool cConvert::Convert()
 		}
 
 		// Теперь полученный путь используем для настройки получателя.
-		std::cout << "Полный путь до нового файла: " << asNewTuneUri.str() << std::endl;
+		std::cout << "Full path to new file: " << asNewTuneUri.str() << std::endl;
 		mFilesink = gst_bin_get_by_name (GST_BIN (mPipeline), "convert_sink");
 		g_object_set (mFilesink, "location", asNewTuneUri.str().c_str(), NULL);
 

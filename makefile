@@ -20,6 +20,7 @@ clean:
 	
 convert: ./Convert.o ./MainWin.o ./Track.o ./main.o
 	g++ `pkg-config --libs gtk+-3.0 gstreamer-1.0 gstreamer-audio-1.0` -o "convert"  ./Convert.o ./MainWin.o ./Track.o ./main.o
+	rm ./Convert.d ./MainWin.d ./Track.d ./main.d
 	
 Convert.o:
 	g++ -O0 -g3 -Wall -c -fmessage-length=0 `pkg-config --cflags gtk+-3.0 gstreamer-1.0` -pthread -MMD -MP -MF"Convert.d" -MT"Convert.d" -o "Convert.o" "./Convert.cpp"
